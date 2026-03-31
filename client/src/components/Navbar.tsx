@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Home, ClipboardList, Ticket, PhoneCall, Bell, User, Menu, X } from 'lucide-react';
+import { Home, ClipboardList, Ticket, PhoneCall, Bell, User, Menu, X, LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
+  const { isAuthenticated, user, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -24,12 +27,12 @@ const Navbar: React.FC = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-slate-900/80 backdrop-blur-lg border-b border-white/10 py-3' : 'bg-transparent py-5'}`}>
       <div className="container mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-2 group cursor-pointer">
+        <Link to="/" className="flex items-center gap-2 group cursor-pointer">
           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform">
             <span className="text-white font-black text-xl">B</span>
           </div>
           <span className="text-white font-bold text-xl tracking-tight hidden sm:block">BloomAudit</span>
-        </div>
+        </Link>
 
         {/* Desktop Links */}
         <div className="hidden lg:flex items-center gap-8">
@@ -54,12 +57,38 @@ const Navbar: React.FC = () => {
           </div>
           
           <div className="hidden sm:flex items-center gap-3">
-            <button className="text-slate-300 hover:text-white text-sm font-semibold px-4 py-2 transition-colors">
-              Login
-            </button>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95">
-              Register
-            </button>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-4">
+                {user?.package_status === 'active' && (
+                  <div className="hidden md:flex items-center gap-2 bg-green-500/10 border border-green-500/20 px-3 py-1.5 rounded-full mr-2">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span className="text-xs font-semibold text-green-400">
+                      {user?.package_name} Plan · Started {user?.purchase_date ? new Date(user.purchase_date).toLocaleDateString() : 'Today'}
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 bg-slate-800/50 border border-slate-700 pl-3 pr-4 py-1.5 rounded-full cursor-pointer hover:bg-slate-700/50 transition-colors">
+                  <div className="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center text-xs font-bold text-white uppercase">
+                    {user?.name?.charAt(0) || 'U'}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-white leading-none">{user?.name?.split(' ')[0]}</span>
+                  </div>
+                </div>
+                <button onClick={logout} className="text-slate-400 hover:text-red-400 transition-colors p-2" title="Logout">
+                  <LogOut size={20} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="text-slate-300 hover:text-white text-sm font-semibold px-4 py-2 transition-colors">
+                  Login
+                </Link>
+                <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 inline-block">
+                  Register
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -81,8 +110,16 @@ const Navbar: React.FC = () => {
             ))}
             <hr className="border-white/5" />
             <div className="flex flex-col gap-4">
-              <button className="text-white font-semibold py-3 border border-white/10 rounded-xl">Login</button>
-              <button className="bg-blue-600 text-white font-bold py-3 rounded-xl">Register</button>
+              {isAuthenticated ? (
+                 <button onClick={logout} className="text-red-400 font-semibold py-3 border border-red-500/10 bg-red-500/10 rounded-xl flex items-center justify-center gap-2">
+                   <LogOut size={18} /> Logout
+                 </button>
+              ) : (
+                 <>
+                   <Link to="/login" className="text-white font-semibold py-3 border border-white/10 rounded-xl text-center">Login</Link>
+                   <Link to="/register" className="bg-blue-600 text-white font-bold py-3 rounded-xl block text-center">Register</Link>
+                 </>
+              )}
             </div>
           </div>
         </div>
