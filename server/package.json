@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "tsx watch index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "migrate": "tsx migrate.ts",
+    "seed": "tsx seed.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -15,7 +17,8 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.11.5"
+    "pg": "^8.11.5",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
